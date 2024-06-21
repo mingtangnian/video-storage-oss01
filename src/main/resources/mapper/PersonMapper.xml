@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.PersonMapper">
+
+    <select id="queryPerson" parameterType="java.lang.String" resultType="com.example.demo.entity.Person">
+        select * from person
+    </select>
+
+
+
+    <select id="getPersonRndom" resultType="com.example.demo.entity.Person">
+        SELECT * FROM person where community_id =#{communityId} ORDER BY RAND() limit #{size};
+    </select>
+
+    <select id="getRestaurant" resultType="com.example.demo.entity.Restaurant">
+        select * from restaurant where community_id =#{communityId}
+    </select>
+
+    <insert id="addPersons">
+        INSERT INTO person (person_name, gender, community_id,certificate_no,age)
+        VALUES
+        <foreach collection="persons" index="" item="person" separator=",">
+            (#{person.personName},
+            #{person.gender},
+            #{person.communityId},#{person.certificateNo},#{person.age})
+        </foreach>
+    </insert>
+
+    <insert id="addCard">
+        INSERT INTO card (card_no, balance, person_id,status,create_time)
+        VALUES
+        <foreach collection="cardList" index="" item="card" separator=",">
+            (#{card.cardNo},
+            #{card.balance},
+            #{card.personId},#{card.status},#{card.createTime})
+        </foreach>
+    </insert>
+
+    <insert id="addRestaurant">
+        INSERT INTO restaurant (restaurant_name,location,description,community_id,apply_status,create_time)
+        VALUES
+        <foreach collection="restaurants" index="" item="restaurant" separator=",">
+            (#{restaurant.restaurantName},
+            #{restaurant.location},
+            #{restaurant.description},
+            #{restaurant.communityId},#{restaurant.applyStatus},now())
+        </foreach>
+    </insert>
+
+    <insert id="addOrders">
+        INSERT INTO orders (card_no,restaurant_id,type,order_time,status,personal_expenses,subsidy_expenses,completion_time)
+        VALUES
+        <foreach collection="ordersList" index="" item="order" separator=",">
+            (#{order.cardNo},
+            #{order.restaurantId},
+            #{order.type},
+            #{order.orderTime},#{order.status},#{order.personalExpenses},#{order.subsidyExpenses},#{order.completionTime})
+        </foreach>
+    </insert>
+
+    <insert id="addEvaluation">
+        INSERT INTO evaluation (person_id,restaurant_id,level,create_time)
+        VALUES
+        <foreach collection="evaluationList" index="" item="order" separator=",">
+            (#{order.personId},
+            #{order.restaurantId},
+            #{order.level},
+            #{order.createTime})
+        </foreach>
+    </insert>
+
+
+</mapper>

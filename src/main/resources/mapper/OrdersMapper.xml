@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.OrdersMapper">
+
+
+    <select id="queryPersonNotComplete" resultType="com.example.demo.entity.QueryPersonOrderResponse">
+        select b.person_name,b.gender,b.certificate_no,b.age,a.order_time from
+        (select * from orders where type =2 and status=#{status} and restaurant_id =#{restaurantId} and order_time between #{startTime} and #{endTime}) a left join
+        (select * from person where age>70) b
+        on a.card_no=b.certificate_no
+    </select>
+
+    <select id="queryBee" resultType="com.example.demo.entity.QueryBeeResponse">
+        SELECT DATE_FORMAT(order_time, '%Y-%m') AS month, COUNT(*) as count
+        FROM orders where restaurant_id=#{restaurantId}
+        GROUP BY month having count >#{size};
+    </select>
+
+    <select id="getSubsidy" resultType="java.lang.Integer">
+        SELECT sum(subsidy_expenses) from orders where restaurant_id=#{restaurantId} and
+            order_time between #{startTime} and #{endTime} and status=2
+    </select>
+
+    <select id="getDeliveryfee" resultType="com.example.demo.entity.QueryBeeResponse">
+        SELECT DATE_FORMAT(order_time, '%Y-%m-%d') AS day, COUNT(*) as count
+        FROM orders where restaurant_id=#{restaurantId} and order_time between #{startTime} and #{endTime} and status=2
+        GROUP BY day having count>100;
+    </select>
+
+    <select id="queryOrderCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) as count
+        FROM orders where restaurant_id=#{restaurantId} and order_time between #{startTime} and #{endTime} and status=2
+    </select>
+
+    <select id="statistic" resultType="com.example.demo.entity.QueryBeeResponse">
+        select (case
+        when age &lt;60 then '20-60'
+        when age &lt;70 then '60-70'
+        when age &lt;80 then '70-80'
+        when age &lt;90 then '80-90'
+        end
+        ) as segment,
+        count(*) as count from person where certificate_no in (select card_no from orders where restaurant_id=#{restaurantId})
+        group by segment
+    </select>
+
+    <select id="statisticTimes" resultType="com.example.demo.entity.StatisticResponse">
+        select card_no,restaurant_id,count(*) as count
+        from orders where order_time between #{startTime} and #{endTime} and status=2
+        group by card_no,restaurant_id
+    </select>
+
+    <select id="queryEvalution" resultType="com.example.demo.entity.QueryEvalutionResponse">
+        SELECT restaurant_id as restaurantId,DATE_FORMAT(create_time, '%Y-%m') AS month, avg(level) as averageValue
+        FROM evaluation
+        GROUP BY restaurant_id,month;
+    </select>
+</mapper>

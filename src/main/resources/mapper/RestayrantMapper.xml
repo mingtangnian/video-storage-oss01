@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.RestaurantMapper">
+
+    <insert id="addRestaurant">
+        INSERT INTO restaurant (restaurant_name,location,description,community_id,apply_status,create_time)
+        VALUES
+        <foreach collection="restaurants" index="" item="restaurant" separator=",">
+            (#{restaurant.restaurantName},
+            #{restaurant.location},
+            #{restaurant.description},
+            #{restaurant.communityId},#{restaurant.applyStatus},now())
+        </foreach>
+    </insert>
+
+    <update id="approve">
+        update restaurant set apply_status = #{status} where restaurant_id =#{restaurantId}
+    </update>
+
+
+</mapper>
